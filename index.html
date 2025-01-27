@@ -1,31 +1,80 @@
-<html>
-<head>
-  <title>Digital Poetry by Ger Killeen</title>
-</head>
+<script src="https://cdn.jsdelivr.net/npm/aframe@1.6.0/dist/aframe-master.min.js"></script>
 
-<body style='margin:0px; overflow: hidden;'>
-<a-scene>
-  <a-assets>
+<!--<script src='https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js'></script>-->
+<script src='/asset/aframe-ar-nft.js'></script>
 
-       <video id="portfolio-vid" autoplay loop="true" src="https://res.cloudinary.com/creative-web-solutions-llc/video/upload/v1553983174/VRAssets/Mountain.mp4"></video>
-    <a-mixin id="name" text="anchor:left; align: left; width: 4; value: Ger Killeen"></a-mixin>
-    <a-mixin id="title" text="anchor:left; align:left; width: 2; value: Digital Poetry in Augmented Reality"></a-mixin>
-    <img id="avatar" src="https://res.cloudinary.com/creative-web-solutions-llc/image/upload/v1555781554/samples/people/gerText1big.png">
-  </a-assets>
+<script>
+    window.onload = function() {
+        AFRAME.registerComponent('videohandler', {
+            init: function () {
+                var marker = this.el;
 
-<a-image src="#avatar" position="-0.976 2 -1.5" opacity="0.5"></a-image>
-  
-   <a-plane id="namebg" color="#000" position="1 1.997 -1.611" rotation="0 0 0" height="1.2" width="2.5" opacity="0.5"></a-plane>
-    
-  <a-plane color="#FFF" position="0 0 0" rotation="-90 0 0" height=".8" width="1.5" opacity="0" text="anchor:center; align:center; width: 5; value: gerkilleen.net/poet.html"></a-plane>
-  <a-text mixin="name" position="0 2.3 -1.5" wrap-count="20"></a-text>
-   <a-text mixin="title" position="0 1.8 -1.5" wrap-count="15"></a-text>
-<a-video src="#portfolio-vid" width="16" height="9" position="2.250 1.962 -0.061" rotation="0 -90 0" scale="0.200 0.200 0.200" opacity="0.5"></a-video>
+                this.vid = document.querySelector("#vid");
 
-  	<a-marker-camera preset='hiro'></a-marker-camera>
- 
-  </a-entity>
-</a-scene>
+                marker.addEventListener('markerFound', function () {
+                    this.vid.play();
+                }.bind(this));
+
+		marker.addEventListener('markerLost', function() {
+			this.vid.pause();
+			this.vid.currentTime = 0;
+		}.bind(this));
+            }
+        });
+    };
+</script>
+
+<style>
+    .arjs-loader {
+        height: 100%;
+        width: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        background-color: rgba(0, 0, 0, 0.8);
+        z-index: 9999;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .arjs-loader div {
+        text-align: center;
+        font-size: 1.25em;
+        color: white;
+    }
+</style>
+
+<body style='margin : 0px; overflow: hidden;'>
+    <div class="arjs-loader">
+        <div>Loading, please wait...</div>
+    </div>
+    <a-scene
+        vr-mode-ui="enabled: false;"
+        renderer='antialias: true; alpha: true; precision: medium;'
+        embedded arjs='trackingMethod: best; sourceType: webcam; debugUIEnabled: false;'>
+
+        <a-assets>
+            <video src="/asset/mov_bbb.mp4"
+                preload="auto" id="vid" response-type="arraybuffer" loop
+                crossorigin webkit-playsinline autoplay muted playsinline>
+            </video>
+        </a-assets>
+
+        <a-nft
+            videohandler
+            type='nft' url='/dataNFT/pinball'
+            smooth="true" smoothCount="10" smoothTolerance="0.01" smoothThreshold="5"
+        >
+            <a-video
+                src="#vid"
+                position='50 150 -100'
+                rotation='90 0 180'
+                width='300'
+                height='175'
+                >
+            </a-video>
+        </a-nft>
+		<a-entity camera></a-entity>
+	</a-scene>
 </body>
-
-</html>
