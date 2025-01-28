@@ -1,53 +1,49 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <title>AR Demo</title>
-    <script src="https://aframe.io/releases/0.6.1/aframe.min.js"></script>
-    <script src="https://jeromeetienne.github.io/AR.js/aframe/build/aframe-ar.js"></script>
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta charset="utf-8" />
+    <title>Youtube Videos Sunway</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="js/aframe-websurfaces-custom.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.1.5/dist/mindar-image.prod.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.1.5/dist/mindar-image-aframe.prod.js"></script>
+    <link rel="stylesheet" href="css/style.css">
     <script>
-        // We're going to register a custom event listener through a-frame that will fire
-        // whenever a marker has entered the camera view and is found through ar.js
-        AFRAME.registerComponent('registerevents', {
-            init: function() {
-                var marker = this.el;
-
-                // Element emits events when found and lost
-                marker.setAttribute('emitevents', 'true');
-
-                marker.addEventListener('markerFound', function() {
-                    // Alright, a marker has been found. Let's get the video element
-                    var vid = document.getElementById('waterVideo');
-
-                    // Make sure that the video a-frame object is visible
-                    document.querySelector('#water').setAttribute('visible', true);
-
-                    // Reset the video to the beginning and play it through
-                    vid.currentTime = 0;                    
-                    vid.play();
-                    
-                    // Once the video has completed, we're going to hide the a-video element
-                    // which will display the a-image element with the watch behind it
-                    vid.addEventListener('ended', function(e) {
-                        document.querySelector('#water').setAttribute('visible', false);
-                    });
-                });
-            }
+        AFRAME.registerComponent("world2local", {
+            tick: function () {
+                var worldToLocal = new THREE.Matrix4();
+                var scene = document.querySelector("a-scene");
+                worldToLocal.copy(this.el.object3D.matrixWorld).invert();
+                scene.object3D.applyMatrix4(worldToLocal);
+            },
         });
     </script>
 </head>
-<body style="margin:0; overflow:hidden;">
-    <a-scene embedded arjs="" artoolkit="">
-        <a-assets timeout="10000">
-            <img id="watchImage" src="./asset/pinball.jpg">
-            <video id="waterVideo" loop="false" autoplay="false" src="/asset/mov_bbb.mp4" preload="auto"></video>
-        </a-assets>
-        <a-marker preset="hiro" registerevents>
-            <a-image id="watch" src="#watchImage" height="2" width="1" position="0 1 0"></a-image>
-            <a-video id="water" src="#waterVideo" height="2" width="1" position="0 1 0" autoplay="true"></a-video>
-        </a-marker>
-        <a-entity camera></a-entity>
+
+<body>
+    <div id="buttons">
+        <button id="playButton">
+            Play
+        </button>
+        <button id="pauseButton">
+            Pause
+        </button>
+        <button id="stopButton">
+            Stop
+        </button>
+    </div>
+    <a-scene
+        mindar-image="imageTargetSrc: ./asset/targets.mind; filterMinCF:0.001; filterBeta: 10"
+        vr-mode-ui="enabled: false">
+        <a-camera position="0 0 0" look-controls="enabled: false; pointerLockEnabled: false"></a-camera>
+        <a-entity id="example-target" mindar-image-target="targetIndex: 0">
+            <a-entity id="myVid" world2local class="clickable"
+                websurface="url:https://www.youtube.com/embed/L6iKapYgN94; width:3.5; height:2.0;" position="0 0 0">
+            </a-entity>
+        </a-entity>
     </a-scene>
 </body>
+<script src="js/main.js"></script>
+
 </html>
